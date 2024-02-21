@@ -28,7 +28,7 @@ function stop {
 }
 
 function show-status {
-	if [[ "$1" == "kc" ]]; then
+	if [[ "$1" == "kc" || "$1" == "" ]]; then
 		status-keycloak
 	elif [[ "$1" == "db" ]]; then
 		status-db
