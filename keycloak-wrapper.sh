@@ -10,7 +10,7 @@ function help {
 	echo "    start		Start the database and keycloak services"
 	echo "    stop		Stop the database and keycloak services"
 	echo "    status <db|kc>	Show the status of the parameter"
-	echo "    log			See the content of /var/log/keycloak/server.log"
+	echo "    log [stderr|stdout]	See the content of /var/log/keycloak/server.log"
 	echo "    shortlog, sl	Last 1000 lines of /var/log/keycloak/server.log"
 	echo
 	echo "OPTIONS:"
@@ -47,9 +47,18 @@ function status-db {
 }
 
 function log {
-	less /var/log/keycloak/server.log
+	if [[ "$1" == "stderr" ]]; then
+		less /var/log/keycloak/stderr.log
+	elif [[ "$1" == "stdout" ]]; then
+		less /var/log/keycloak/stdout.log
+	elif [[ "$1" == "" ]]; then
+		less /var/log/keycloak/server.log
+	else
+		help
+		exit 1
+	fi
 }
-function shortlog {
+function shortlog-server {
 	tail -f -n1000 /var/log/keycloak/server.log
 }
 
@@ -65,10 +74,10 @@ case $1 in
 		show-status $2
 		;;
 	"log")
-		log
+		log $2
 		;;
 	"shortlog" | "sl")
-		shortlog
+		shortlog-server
 		;;
 	*)
 		help
