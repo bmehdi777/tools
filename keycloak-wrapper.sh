@@ -9,6 +9,7 @@ function help {
 	echo
 	echo "    start		Start the database and keycloak services"
 	echo "    stop		Stop the database and keycloak services"
+	echo "    restart		Restart the database and keycloak services"
 	echo "    status <db|kc>	Show the status of the parameter"
 	echo "    log [stderr|stdout]	See the content of /var/log/keycloak/server.log"
 	echo "    shortlog, sl	Last 1000 lines of /var/log/keycloak/server.log"
@@ -25,6 +26,10 @@ function start {
 function stop {
 	sudo systemctl stop mysqld
 	sudo systemctl stop keycloak
+}
+function restart {
+	sudo systemctl restart mysqld
+	sudo systemctl restart keycloak
 }
 
 function show-status {
@@ -69,6 +74,9 @@ case $1 in
 		;;
 	"stop")
 		stop
+		;;
+	"restart")
+		restart
 		;;
 	"status")
 		show-status $2
