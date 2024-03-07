@@ -7,7 +7,8 @@ function help {
 	echo 
 	echo "COMMAND:"
 	echo
-	echo "    start		Start the database and keycloak services"
+	echo "    start [kc|db]	Start the database and keycloak services"
+	echo "    start-dev		Start in dev mode"
 	echo "    stop		Stop the database and keycloak services"
 	echo "    restart		Restart the database and keycloak services"
 	echo "    status <db|kc>	Show the status of the parameter"
@@ -19,17 +20,49 @@ function help {
 	echo "    -h,--help		See the help"
 }
 
+function exit-prg {
+		echo "Wrong usage."
+		help
+		exit 1
+}
 function start {
-	sudo systemctl start mariadb
-	sudo systemctl start keycloak
+	if [[ "$1" == "kc" ]]; then
+		sudo systemctl start keycloak
+	elif [[ "$1" == "db" ]]; then
+		sudo systemctl start mariadb
+	elif [[ "$1" == "" ]]; then
+		sudo systemctl start mariadb
+		sudo systemctl start keycloak
+	else
+		exit-prg
+	fi
+}
+function start-dev {
+	/opt/keycloak/bin/kc.sh start-dev
 }
 function stop {
-	sudo systemctl stop mysqld
-	sudo systemctl stop keycloak
+	if [[ "$1" == "kc" ]]; then
+		sudo systemctl stop keycloak
+	elif [[ "$1" == "db" ]]; then
+		sudo systemctl stop mariadb
+	elif [[ "$1" == "" ]]; then
+		sudo systemctl stop mariadb
+		sudo systemctl stop keycloak
+	else
+		exit-prg
+	fi
 }
 function restart {
-	sudo systemctl restart mysqld
-	sudo systemctl restart keycloak
+	if [[ "$1" == "kc" ]]; then
+		sudo systemctl restart keycloak
+	elif [[ "$1" == "db" ]]; then
+		sudo systemctl restart mariadb
+	elif [[ "$1" == "" ]]; then
+		sudo systemctl restart mariadb
+		sudo systemctl restart keycloak
+	else
+		exit-prg
+	fi
 }
 
 function show-status {
@@ -38,9 +71,7 @@ function show-status {
 	elif [[ "$1" == "db" ]]; then
 		status-db
 	else
-		echo "Wrong usage."
-		help
-		exit 1
+		exit-prg
 	fi
 
 }
@@ -59,8 +90,7 @@ function log {
 	elif [[ "$1" == "" ]]; then
 		less /var/log/keycloak/server.log
 	else
-		help
-		exit 1
+		exit-prg
 	fi
 }
 function shortlog-server {
@@ -70,13 +100,16 @@ function shortlog-server {
 
 case $1 in
 	"start")
-		start
+		start $2
+		;;
+	"start-dev")
+		start-dev
 		;;
 	"stop")
-		stop
+		stop $2
 		;;
 	"restart")
-		restart
+		restart $2
 		;;
 	"status")
 		show-status $2
