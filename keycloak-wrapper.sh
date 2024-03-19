@@ -8,7 +8,7 @@ function help {
 	echo "COMMAND:"
 	echo
 	echo "    start [kc|db]	Start the database and keycloak services"
-	echo "    start-dev		Start in dev mode"
+	echo "    start-dev [-v]	Start in dev mode"
 	echo "    stop		Stop the database and keycloak services"
 	echo "    restart		Restart the database and keycloak services"
 	echo "    status <db|kc>	Show the status of the parameter"
@@ -38,7 +38,11 @@ function start {
 	fi
 }
 function start-dev {
-	/opt/keycloak/bin/kc.sh start-dev
+	if [[ "$1" == "-v" ]]; then
+		/opt/keycloak/bin/kc.sh start-dev --verbose
+	else
+		/opt/keycloak/bin/kc.sh start-dev
+	fi
 }
 function stop {
 	if [[ "$1" == "kc" ]]; then
@@ -103,7 +107,7 @@ case $1 in
 		start $2
 		;;
 	"start-dev")
-		start-dev
+		start-dev $2
 		;;
 	"stop")
 		stop $2
