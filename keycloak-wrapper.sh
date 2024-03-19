@@ -39,7 +39,7 @@ function start {
 }
 function start-dev {
 	if [[ "$1" == "-v" ]]; then
-		/opt/keycloak/bin/kc.sh start-dev --verbose
+		/opt/keycloak/bin/kc.sh --verbose start-dev
 	else
 		/opt/keycloak/bin/kc.sh start-dev
 	fi
