@@ -7,7 +7,7 @@ function help {
 	echo 
 	echo "COMMAND:"
 	echo
-	echo "    start [kc|db]	Start the database and keycloak services"
+	echo "    start [kc|db|rp]	Start the database and keycloak services"
 	echo "    start-dev [-v]	Start in dev mode"
 	echo "    stop		Stop the database and keycloak services"
 	echo "    restart		Restart the database and keycloak services"
@@ -30,9 +30,13 @@ function start {
 		sudo systemctl start keycloak
 	elif [[ "$1" == "db" ]]; then
 		sudo systemctl start mariadb
+	elif [[ "$1" == "rp" ]]; then
+		docker compose -f ~/Workspace/.infra/keycloak-rp/haproxy/docker-compose.yml up -d
 	elif [[ "$1" == "" ]]; then
+		docker compose -f ~/Workspace/.infra/keycloak-rp/haproxy/docker-compose.yml up -d
 		sudo systemctl start mariadb
 		sudo systemctl start keycloak
+		echo "Keycloak is available at https://keycloak.local/auth/admin/master/console/"
 	else
 		exit-prg
 	fi
@@ -49,7 +53,10 @@ function stop {
 		sudo systemctl stop keycloak
 	elif [[ "$1" == "db" ]]; then
 		sudo systemctl stop mariadb
+	elif [[ "$1" == "rp" ]]; then
+		(cd ~/Workspace/.infra/keycloak-rp/haproxy/ && docker compose down)
 	elif [[ "$1" == "" ]]; then
+		(cd ~/Workspace/.infra/keycloak-rp/haproxy/ && docker compose down)
 		sudo systemctl stop mariadb
 		sudo systemctl stop keycloak
 	else
