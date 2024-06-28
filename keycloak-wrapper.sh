@@ -7,13 +7,14 @@ function help {
 	echo 
 	echo "COMMAND:"
 	echo
-	echo "    start [kc|db|rp]	Start the database and keycloak services"
-	echo "    start-dev [-v]	Start in dev mode"
-	echo "    stop		Stop the database and keycloak services"
-	echo "    restart		Restart the database and keycloak services"
-	echo "    status <db|kc>	Show the status of the parameter"
-	echo "    log [stderr|stdout]	See the content of /var/log/keycloak/server.log"
-	echo "    shortlog, sl	Last 1000 lines of /var/log/keycloak/server.log"
+	echo "    start [kc|db|rp|mail]	Start the database and keycloak services"
+	echo "    start-dev [-v]		Start in dev mode"
+	echo "    stop			Stop the database and keycloak services"
+	echo "    restart			Restart the database and keycloak services"
+	echo "    status <db|kc>		Show the status of the parameter"
+	echo "    cd				Cd into keycloak folder"
+	echo "    log [stderr|stdout]		See the content of /var/log/keycloak/server.log"
+	echo "    shortlog, sl		Last 1000 lines of /var/log/keycloak/server.log"
 	echo
 	echo "OPTIONS:"
 	echo
@@ -32,6 +33,9 @@ function start {
 		sudo systemctl start mariadb
 	elif [[ "$1" == "rp" ]]; then
 		docker compose -f ~/Workspace/.infra/keycloak-rp/haproxy/docker-compose.yml up -d
+	elif [[ "$1" == "mail" ]]; then
+		docker run -d --name maildev -p 1080:1080 -p 1025:1025 maildev/maildev
+		echo "Maildev running at http://localhost:1080"
 	elif [[ "$1" == "" ]]; then
 		docker compose -f ~/Workspace/.infra/keycloak-rp/haproxy/docker-compose.yml up -d
 		sudo systemctl start mariadb
@@ -55,6 +59,9 @@ function stop {
 		sudo systemctl stop mariadb
 	elif [[ "$1" == "rp" ]]; then
 		(cd ~/Workspace/.infra/keycloak-rp/haproxy/ && docker compose down)
+	elif [[ "$1" == "mail" ]]; then
+		docker stop maildev
+		docker container rm maildev
 	elif [[ "$1" == "" ]]; then
 		(cd ~/Workspace/.infra/keycloak-rp/haproxy/ && docker compose down)
 		sudo systemctl stop mariadb
@@ -127,6 +134,13 @@ case $1 in
 		;;
 	"log")
 		log $2
+		;;
+	"cd")
+		cd /opt/keycloak/
+		echo "Entering in a subshell..."
+		echo "Type 'exit' to go to your previous shell."
+		echo ""
+		exec $SHELL
 		;;
 	"shortlog" | "sl")
 		shortlog-server
