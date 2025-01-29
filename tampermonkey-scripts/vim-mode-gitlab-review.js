@@ -18,7 +18,6 @@
     let vimModeHasRun = false;
     const observer = new MutationObserver(function(mutations, obs) {
         mutations.forEach(function(mutation) {
-            console.log(mutation)
             if (mutation.type === "childList" && mutation.target?.id === "diffs" && !vimModeHasRun) {
                 vimMode();
                 obs.disconnect();
@@ -57,6 +56,13 @@
                         event.preventDefault();
                         event.stopImmediatePropagation();
                         viewedBtn.click();
+                        if (!event.shiftKey) {
+                        // wait a bit... too quick otherwise
+                            window.setTimeout(()=> {
+                                nextBtn.click();
+
+                            }, 200);
+                        }
                         break;
                 }
             }, true);
