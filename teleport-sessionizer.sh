@@ -22,7 +22,8 @@ selectSsh () {
 		exit 0
 	fi
 
-	preselected_user=("nodejs" "ubuntu" "root" "centos")
+	# basic user, not here on server
+	preselected_user=("")
 	user=$(printf "%s\n" "${preselected_user[@]}" | fzf)
 
 	if [[ -z $user ]]; then
