@@ -41,6 +41,12 @@ contains_pattern() {
   return 1
 }
 
+is_sops_config_file() {
+  local file_name
+  file_name="$(basename "$1")"
+  [[ "$file_name" == ".sops.yaml" || "$file_name" == ".sops.yml" ]]
+}
+
 if [[ $# -lt 2 ]]; then
   print_help
   exit 1
@@ -109,7 +115,7 @@ declare -A seen=()
 declare -a files_to_process=()
 
 for file_path in "${candidates[@]}"; do
-  if [[ -f "$file_path" ]] && contains_pattern "$file_path"; then
+  if [[ -f "$file_path" ]] && contains_pattern "$file_path" && ! is_sops_config_file "$file_path"; then
     if [[ -z "${seen[$file_path]+x}" ]]; then
       files_to_process+=("$file_path")
       seen["$file_path"]=1
